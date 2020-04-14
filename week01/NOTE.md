@@ -51,7 +51,8 @@ function deQuery(url = window.location.href) {
 }
 ```
 原理： 正则处理字符串链接，根据一般经验提取内容
-https://u.geekbang.org/lesson/12?article=223397#hash666
+
+测试: https://u.geekbang.org/lesson/12?article=223397#hash666
 ![示例](./demo.png '示例')
 
 ### 知识体系
