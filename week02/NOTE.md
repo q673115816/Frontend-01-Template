@@ -2,7 +2,7 @@
 
 ### 作业1 转成10进制
 ```javascript
-module.export = 
+module.exports = 
 function customDecode(str) {
     const code2 = /(0b[01]*(?=0b|0x|0o|$))|(0o[0-7]*(?=0b|0x|0o|$))|(0x[0-9a-fA-F]*(?=0b|0x|0o|$))/g;
     return str.replace(code2, function(match, p1, p2, p3) {

@@ -5,7 +5,7 @@
  window.location 内置了分析链接的方法
  可以自己实现一个方法解析链接
  ```javascript
-module.export = 
+module.exports = 
 function customDecode(url = window.location.href) {
     // 防御判断
     if(typeof url !== 'string') {
