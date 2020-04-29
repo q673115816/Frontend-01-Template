@@ -1,5 +1,35 @@
 # 每周总结可以写在这里
 
+### 2-1 
+1. BNF
+
+### 2-2
+1. 字符集unicode
+https://www.fileformat.info/info/unicode/
+Blocks
+Categories
+
+InputElement
+
+    WhiteSpace
+        feff BOM 大端法 小端法
+    LineTerminator
+    Comment
+    Token
+        Identifier
+        Keywords
+        
+        Punctuator
+        Literal
+            Nubmer
+            String
+            Boolean
+            Null
+            Undefined
+            Object
+            SymBol
+            
+
 ### 作业1 写一个正则表达式 匹配所有 Number 直接量
 ```javascript
 /**
