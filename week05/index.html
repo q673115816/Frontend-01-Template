@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+<div id="container" style="width: 100vw;height: 100vh"></div>
+<script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.g6-3.4.9/dist/g6.min.js"></script>
+<script>
+    let objects = [
+        eval,
+        isFinite,
+        isNaN,
+        parseFloat,
+        parseInt,
+        decodeURI,
+        decodeURIComponent,
+        encodeURI,
+        encodeURIComponent,
+        Array,
+        Date,
+        RegExp,
+        Promise,
+        Proxy,
+        Map,
+        WeakMap,
+        Set,
+        WeakSet,
+        Function,
+        Boolean,
+        String,
+        Number,
+        Symbol,
+        Object,
+        Error,
+        EvalError,
+        RangeError,
+        ReferenceError,
+        SyntaxError,
+        TypeError,
+        URIError,
+        ArrayBuffer,
+        SharedArrayBuffer,
+        DataView,
+        Float32Array,
+        Float64Array,
+        Int8Array,
+        Int16Array,
+        Int32Array,
+        Uint8Array,
+        Uint16Array,
+        Uint32Array,
+        Uint8ClampedArray,
+        Atomics,
+        JSON,
+        Math,
+        Reflect];
+
+    let realm = {
+        id: 'realm',
+        children: []
+    }
+    function dp(object = realm) {
+        if (object.children && object.children.length > 0) {
+            let arr = object.children
+            for (let i = 0; i < arr.length; i++) {
+                let ele = arr[i]
+                let o = ele.o
+                let p = ele.p
+                if (o === p) return
+                for (let name of Object.getOwnPropertyNames(o)) {
+                    let d = Object.getOwnPropertyDescriptor(o, name)
+
+                    console.log(d)
+
+                    if ((d.value !== null && typeof d.value === "object") || (typeof d.value === "function")) {
+                        // if (!set.has(d.value)) {
+                        ele.children = ele.children || []
+                        // set.add(d.value)
+                        ele.children.push({
+                            id: name,
+                            o: d.value,
+                            p: o
+                        })
+                        // }
+                    }
+                    if (d.get) {
+                        if (!set.has(d.get)) {
+                            ele.children = ele.children || []
+                            ele.children.push({
+                                id: name,
+                                o: d.get,
+                                p: o
+                            })
+                        }
+                    }
+                    if (d.set) {
+                        if (!set.has(d.set)) {
+                            ele.children = ele.children || []
+                            ele.children.push({
+                                id: name,
+                                o: d.set,
+                                p: o
+                            })
+                        }
+                    }
+                    dp(ele)
+                }
+
+            }
+        }
+    }
+    objects.forEach(item => {
+        realm.children.push({
+            id: getName(item),
+            o: item,
+            collapsed: true
+        })
+    })
+
+    let count = 0
+
+    void function() {
+        void function cb (node = realm) {
+            node.children.forEach((item) => {
+                if(Object.getOwnPropertyNames(item.o).length > 0) item.children = []
+                for(let name of Object.getOwnPropertyNames(item.o)) {
+                    let d = Object.getOwnPropertyDescriptor(item.o, name)
+                    if(typeof d.value !== 'object' && typeof d.value !== 'function') {
+                        item.children.push({
+                            id: `${count++} - value - ${name} `,
+                            o: Object.getOwnPropertyDescriptor(item.o, name)
+                        })
+                    }
+                    if (d.get) {
+                        item.children.push({
+                            id: `${count++} - get - ${name} `,
+                            o: d.get,
+                            p: item.o
+                        })
+                    }
+                    if (d.set) {
+                        item.children.push({
+                            id: `${count++} - set - ${name} `,
+                            o: d.set,
+                            p: item.o
+                        })
+                    }
+                    if ((d.value !== null && typeof d.value === "object") ) {
+                        let obj = {
+                            id: `${count++} - ${name} `,
+                            o: d.value,
+                            p: item.o
+                        }
+                        if(name === 'prototype') {
+                            cb(obj)
+                        }
+                        item.children.push(obj)
+                        // }
+                    }
+                    if(typeof d.value === "function") {
+                        item.children.push({
+                            id: `${count++} - ${name} `,
+                            o: d.value,
+                            p: item.o,
+                        })
+                    }
+                }
+            })
+        }()
+    }()
+
+    function getName(obj) {
+        if (Object.getOwnPropertyNames(obj).includes('name')) {
+            return obj.name
+        }
+        if (Object.getOwnPropertySymbols(obj).includes(Symbol.toStringTag)) {
+            return obj[Symbol.toStringTag]
+        }
+        if (obj === Reflect) {
+            return 'Reflect'
+        }
+        return 'other'
+    }
+
+    console.log(realm)
+
+
+    const width = document.querySelector('#container').scrollWidth;
+    const height = document.querySelector('#container').scrollHeight || 800;
+    const graph = new G6.TreeGraph({
+        container: 'container',
+        width,
+        height,
+        linkCenter: true,
+        modes: {
+            default: [
+                {
+                    type: 'collapse-expand'
+                },
+                'drag-canvas',
+                'zoom-canvas',
+            ],
+        },
+        defaultNode: {
+            size: 26,
+            anchorPoints: [
+                [0, 0.5],
+                [1, 0.5],
+            ],
+            style: {
+                fill: '#C6E5FF',
+                stroke: '#5B8FF9',
+            },
+        },
+        defaultEdge: {
+            type: 'cubic-vertical',
+            style: {
+                stroke: '#A3B1BF',
+            },
+        },
+        layout: {
+            type: 'compactBox',
+            direction: 'TB',
+            getId: function getId(d) {
+                return d.id;
+            },
+            getHeight: function getHeight() {
+                return 16;
+            },
+            getWidth: function getWidth() {
+                return 16;
+            },
+            getVGap: function getVGap() {
+                return 80;
+            },
+            getHGap: function getHGap() {
+                return 20;
+            },
+        },
+    });
+
+    graph.node(function (node) {
+        let position = 'top';
+        let rotate = Math.PI / 4;
+        if (!node.children) {
+            position = 'top';
+            rotate = Math.PI * 1.75;
+        }
+        return {
+            label: node.id,
+            labelCfg: {
+                position,
+                offset: 5,
+                style: {
+                    rotate,
+                    textAlign: 'start',
+                },
+            },
+        };
+    });
+
+    graph.data(realm);
+    graph.render();
+    graph.fitView();
+
+</script>
+</body>
+</html>
