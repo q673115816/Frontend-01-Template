@@ -2,6 +2,7 @@ const http = require('http')
 const util = require('util')
 const server = http.createServer((req, res) => {
     console.log('visit');
+    console.log(req.headers);
     
     res.setHeader('Content-Type', 'text/html');
     res.setHeader('X-Foo', 'bar');
