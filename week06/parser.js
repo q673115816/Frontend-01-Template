@@ -3,6 +3,8 @@ let currentAttribute = null
 let stack = [{ type: 'document', children: [] }]
 let currnetTextNode = null
 
+const { addCSSRules, computeCSS } = require('./transCss')
+
 function emit(token) {
     let top = stack[stack.length - 1]
     if (token.type === 'startTag') {
@@ -21,6 +23,8 @@ function emit(token) {
             }
         }
 
+        computeCSS(element, stack)
+
         top.children.push(element)
 
         element.parent = top
@@ -34,6 +38,9 @@ function emit(token) {
         if (top.tagName !== token.tagName) {
             throw new Error(`tag start end doesn't match!`)
         } else {
+            if(top.tagName === 'style') {
+                addCSSRules(top.children[0].content)
+            }
             stack.pop()
         }
         currnetTextNode = null
@@ -41,7 +48,7 @@ function emit(token) {
         if (currnetTextNode === null) {
             currnetTextNode = {
                 type: 'text',
-                current: ''
+                content: ''
             }
             top.children.push(currnetTextNode)
         }
@@ -84,22 +91,6 @@ function tagOpen(c) {
             content: c
         })
         return
-    }
-}
-
-function endTagOpen(c) {
-    if (c.match(/^[a-zA-Z]$/)) {
-        currentToken = {
-            type: 'enmdTag',
-            tagName: ''
-        }
-        return tagName(c)
-    } else if (c === '>') {
-        
-    } else if (c === EOF) {
-        // return endTagOpen
-    } else {
-
     }
 }
 
@@ -151,29 +142,6 @@ function attributeName(c) {
     }
 }
 
-function afterAttributeName(c) {
-    if (c.match(/^[\t\n\f ]$/)) {
-        return afterAttributeName
-    } else if (c === '/') {
-        return selfClaseingStarTag
-    } else if (c === '=') {
-        return beforeAttrbuteValue
-    } else if (c === '>') {
-        currentToken[currentAttribute.name] = currentAttribute.value
-        emit(currentToken)
-        return data
-    } else if (c === EOF) {
-         
-    } else {
-        currentToken[currentAttribute.name] = currentAttribute.value
-        currentAttribute = {
-            name: '',
-            value: ''
-        }
-        return attributeName(c)
-    }
-}
-
 function beforeAttrbuteValue(c) {
     if (c.match(/^[\t\\n\f ]$/) || c === '/' || c === '>' || c === EOF) {
         return beforeAttrbuteValue
@@ -183,7 +151,7 @@ function beforeAttrbuteValue(c) {
         return singleQuotedAttributeValue
     } else if (c === '>') {
         // emit(currentToken)
-        // return data
+        return data
     } else {
         return UnquotedAttributeValue(c)
     }
@@ -204,7 +172,7 @@ function doubleQuotedAttributeValue(c) {
 }
 
 function singleQuotedAttributeValue(c) {
-    if (c === '\"') {
+    if (c === '\'') {
         currentToken[currentAttribute.name] = currentAttribute.value
         return afterQuotedAttributeValue
     } else if (c === '\u0000') {
@@ -230,6 +198,7 @@ function afterQuotedAttributeValue(c) {
 
     } else {
         currentAttribute.value += c
+        // ??
         return afterQuotedAttributeValue
     }
 }
@@ -260,6 +229,7 @@ function UnquotedAttributeValue(c) {
 function selfClaseingStarTag(c) {
     if (c === '>') {
         currentToken.isSelfCloseing = true
+        emit(currentToken)
         return data
     } else if (c === EOF) {
         // return selfClaseingStarTag
@@ -267,6 +237,46 @@ function selfClaseingStarTag(c) {
 
     }
 }
+
+
+function endTagOpen(c) {
+    if (c.match(/^[a-zA-Z]$/)) {
+        currentToken = {
+            type: 'endTag',
+            tagName: ''
+        }
+        return tagName(c)
+    } else if (c === '>') {
+        
+    } else if (c === EOF) {
+        // return endTagOpen
+    } else {
+
+    }
+}
+function afterAttributeName(c) {
+    if (c.match(/^[\t\n\f ]$/)) {
+        return afterAttributeName
+    } else if (c === '/') {
+        return selfClaseingStarTag
+    } else if (c === '=') {
+        return beforeAttrbuteValue
+    } else if (c === '>') {
+        currentToken[currentAttribute.name] = currentAttribute.value
+        emit(currentToken)
+        return data
+    } else if (c === EOF) {
+         
+    } else {
+        currentToken[currentAttribute.name] = currentAttribute.value
+        currentAttribute = {
+            name: '',
+            value: ''
+        }
+        return attributeName(c)
+    }
+}
+
 
 module.exports.parserHTML = function (html) {
     let state = data
