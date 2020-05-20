@@ -2,17 +2,18 @@ let currentToken = null
 let currentAttribute = null
 let stack = [{ type: 'document', children: [] }]
 let currnetTextNode = null
+
 function emit(token) {
     let top = stack[stack.length - 1]
-    if(token.type === 'startTag') {
+    if (token.type === 'startTag') {
         let element = {
             type: 'element',
             children: [],
             attributes: []
         }
         element.tagName = token.tagName
-        for(let p in token) {
-            if(p != 'type' || p != 'tagName') {
+        for (let p in token) {
+            if (p != 'type' || p != 'tagName') {
                 element.attributes.push({
                     name: p,
                     value: token[p]
@@ -24,20 +25,20 @@ function emit(token) {
 
         element.parent = top
 
-        if(!token.isSelfCloseing) {
+        if (!token.isSelfCloseing) {
             stack.push(element)
         }
 
         currnetTextNode = null
-    } else if(token.type === 'endTag') {
-        if(top.tagName !== token.tagName) {
+    } else if (token.type === 'endTag') {
+        if (top.tagName !== token.tagName) {
             throw new Error(`tag start end doesn't match!`)
         } else {
             stack.pop()
         }
         currnetTextNode = null
-    } else if(token.type === 'text') {
-        if(currnetTextNode === null) {
+    } else if (token.type === 'text') {
+        if (currnetTextNode === null) {
             currnetTextNode = {
                 type: 'text',
                 current: ''
@@ -58,6 +59,7 @@ function data(c) {
         emit({
             type: 'EOF'
         })
+        return
     } else {
         emit({
             type: 'text',
@@ -77,19 +79,23 @@ function tagOpen(c) {
         }
         return tagName(c)
     } else {
-        return tagOpen
+        emit({
+            type: 'text',
+            content: c
+        })
+        return
     }
 }
 
 function endTagOpen(c) {
-    if (c === '>') {
-        return data
-    } else if (c.match(/^[a-zA-Z]$/)) {
+    if (c.match(/^[a-zA-Z]$/)) {
         currentToken = {
             type: 'enmdTag',
             tagName: ''
         }
         return tagName(c)
+    } else if (c === '>') {
+        
     } else if (c === EOF) {
         // return endTagOpen
     } else {
@@ -109,6 +115,7 @@ function tagName(c) {
         emit(currentToken)
         return data
     } else {
+        currentToken.tagName += c
         return tagName
     }
 }
@@ -139,13 +146,32 @@ function attributeName(c) {
     } else if (c === '\"' || c === '\'' || c === '<') {
 
     } else {
-        currentAttribute += c
+        currentAttribute.name += c
         return attributeName
     }
 }
 
 function afterAttributeName(c) {
-
+    if (c.match(/^[\t\n\f ]$/)) {
+        return afterAttributeName
+    } else if (c === '/') {
+        return selfClaseingStarTag
+    } else if (c === '=') {
+        return beforeAttrbuteValue
+    } else if (c === '>') {
+        currentToken[currentAttribute.name] = currentAttribute.value
+        emit(currentToken)
+        return data
+    } else if (c === EOF) {
+         
+    } else {
+        currentToken[currentAttribute.name] = currentAttribute.value
+        currentAttribute = {
+            name: '',
+            value: ''
+        }
+        return attributeName(c)
+    }
 }
 
 function beforeAttrbuteValue(c) {
@@ -156,18 +182,56 @@ function beforeAttrbuteValue(c) {
     } else if (c === '\'') {
         return singleQuotedAttributeValue
     } else if (c === '>') {
-
+        // emit(currentToken)
+        // return data
     } else {
         return UnquotedAttributeValue(c)
     }
 }
 
 function doubleQuotedAttributeValue(c) {
+    if (c === '\"') {
+        currentToken[currentAttribute.name] = currentAttribute.value
+        return afterQuotedAttributeValue
+    } else if (c === '\u0000') {
 
+    } else if (c === EOF) {
+
+    } else {
+        currentAttribute.value += c
+        return doubleQuotedAttributeValue
+    }
 }
 
 function singleQuotedAttributeValue(c) {
+    if (c === '\"') {
+        currentToken[currentAttribute.name] = currentAttribute.value
+        return afterQuotedAttributeValue
+    } else if (c === '\u0000') {
 
+    } else if (c === EOF) {
+
+    } else {
+        currentAttribute.value += c
+        return singleQuotedAttributeValue
+    }
+}
+
+function afterQuotedAttributeValue(c) {
+    if (c.match(/^[\t\n\f ]$/)) {
+        return beforeAttrbuteName
+    } else if (c === '/') {
+        return selfClaseingStarTag
+    } else if (c === '>') {
+        currentToken[currentAttribute.name] = currentAttribute.value
+        emit(currentToken)
+        return data
+    } else if (c === EOF) {
+
+    } else {
+        currentAttribute.value += c
+        return afterQuotedAttributeValue
+    }
 }
 
 function UnquotedAttributeValue(c) {
@@ -185,6 +249,11 @@ function UnquotedAttributeValue(c) {
 
     } else if (c === '\"' || c === '\'' || c == '<' || c == '=' || c == '`') {
 
+    } else if (c === EOF) {
+
+    } else {
+        currentAttribute.value += c
+        return UnquotedAttributeValue
     }
 }
 
@@ -192,7 +261,7 @@ function selfClaseingStarTag(c) {
     if (c === '>') {
         currentToken.isSelfCloseing = true
         return data
-    } else if (c === 'EOF') {
+    } else if (c === EOF) {
         // return selfClaseingStarTag
     } else {
 
@@ -204,5 +273,6 @@ module.exports.parserHTML = function (html) {
     for (let c of html) {
         state = state(c)
     }
-    return state === state(EOF)
+    state = state(EOF)
+    return stack[0]
 }
