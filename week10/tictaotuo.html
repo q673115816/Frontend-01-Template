@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .row {
+            display: flex;
+        }
+
+        .block {
+            width: 100px;
+            height: 100px;
+            background-color: #ace;
+            margin: 4px;
+            display: flex;
+            align-items: center;
+            font-size: 60px;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="box">
+
+    </div>
+    <script>
+        let pattern = [
+            [0, 0, 0,],
+            [0, 0, 0,],
+            [0, 0, 0]
+        ]
+        let cells = {
+            0: '',
+            1: '⭕️',
+            2: '❌'
+        }
+        let curr = 1
+        function show(arr) {
+            box.innerHTML = ''
+            arr.forEach((arr2, y) => {
+                let row = document.createElement('div')
+                row.className = 'row'
+                arr2.forEach((ele, x) => {
+                    let td = document.createElement('div')
+                    td.className = 'block'
+                    td.addEventListener('click', () => move(y, x))
+                    td.innerText = cells[ele]
+                    row.append(td)
+                })
+                box.append(row)
+            })
+        }
+        show(pattern)
+        function move(x, y) {
+            if (pattern[x][y] !== 0) return
+            pattern[x][y] = curr
+            if (check(x, y)) {
+                alert(`${cells[curr]} is win`)
+            }
+            show(pattern)
+            curr = 2 / curr
+        }
+        function check(x, y) {
+
+            {
+                let win = true
+                for (let i = 0; i < 3; i++) {
+                    if(pattern[x][i] !== curr) {
+                        win = false
+                        break
+                    }
+                }
+                if(win) return win
+            }
+            {
+                let win = true
+                for (let i = 0; i < 3; i++) {
+                    if(pattern[i][y] !== curr) {
+                        win = false
+                        break
+                    }
+                }
+                if(win) return win
+            }
+            {
+                let win = true
+                for (let i = 0; i < 3; i++) {
+                    if(pattern[i][i] !== curr) {
+                        win = false
+                        break
+                    }
+                }
+                if(win) return win
+            }
+            {
+                let win = true
+                for (let i = 0; i < 3; i++) {
+                    if(pattern[i][2 - i] !== curr) {
+                        win = false
+                        break
+                    }
+                }
+                if(win) return win
+            }
+            return false
+        }
+    </script>
+</body>
+
+</html>
