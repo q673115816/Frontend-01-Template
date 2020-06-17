@@ -17,24 +17,48 @@
     }
 
 
+    let node = []
+    let node2 = []
     names = names.filter(e => {
         try {
+            // if(window[e].prototype instanceof Node) {
+            //     node.push(e)
+            // }
             return !(window[e].prototype instanceof Node)
         } catch (err) {
             return true;
         }
-    }).filter(e => e != "Node");
+    }).filter(e => {
+        // if(e == 'Node') {
+        //     node2.push(e)
+        // }
+        return e != "Node"
+    });
+    // console.log(node.join('\n'), node2)
 
+    let on = []
 
-    names = names.filter(e => !e.match(/^on/))
+    names = names.filter(e => {
+        if(e.match(/^on/)) {
+            on.push(e)
+        }
+        return !e.match(/^on/)
+    })
+    // console.log(on.join('\n'))
+    let webkit = []
+    names = names.filter(e => {
+        if(e.match(/^webkit/)) {
+            webkit.push(e)
+        }
+        return !e.match(/^(webkit|WebKit)/)
+    })
 
-    names = names.filter(e => !e.match(/^webkit/))
-
+    console.log(webkit.join('\n'))
 
     //https://html.spec.whatwg.org/#window
 
     {
-        let names = Object.getOwnPropertyNames(window)
+        // let names = Object.getOwnPropertyNames(window)
         let js = new Set();
         let objects = ["BigInt", "BigInt64Array", "BigUint64Array", "Infinity", "NaN", "undefined", "eval", "isFinite", "isNaN", "parseFloat", "parseInt", "decodeURI", "decodeURIComponent", "encodeURI", "encodeURIComponent", "Array", "Date", "RegExp", "Promise", "Proxy", "Map", "WeakMap", "Set", "WeakSet", "Function", "Boolean", "String", "Number", "Symbol", "Object", "Error", "EvalError", "RangeError", "ReferenceError", "SyntaxError", "TypeError", "URIError", "ArrayBuffer", "SharedArrayBuffer", "DataView", "Float32Array", "Float64Array", "Int8Array", "Int16Array", "Int32Array", "Uint8Array", "Uint16Array", "Uint32Array", "Uint8ClampedArray", "Atomics", "JSON", "Math", "Reflect", "escape", "unescape"];
         objects.forEach(o => js.add(o));
@@ -74,7 +98,7 @@
 
     //https://www.w3.org/TR/webaudio/
 
-    names = filterOut(names, ["AudioContext", "AudioNode", "AnalyserNode", "AudioBuffer", "AudioBufferSourceNode", "AudioDestinationNode", "AudioParam", "AudioListener", "AudioWorklet", "AudioWorkletGlobalScope", "AudioWorkletNode", "AudioWorkletProcessor", "BiquadFilterNode", "ChannelMergerNode", "ChannelSplitterNode", "ConstantSourceNode", "ConvolverNode", "DelayNode", "DynamicsCompressorNode", "GainNode", "IIRFilterNode", "MediaElementAudioSourceNode", "MediaStreamAudioSourceNode", "MediaStreamTrackAudioSourceNode", "MediaStreamAudioDestinationNode", "PannerNode", "PeriodicWave", "OscillatorNode", "StereoPannerNode", "WaveShaperNode", "ScriptProcessorNode", "AudioProcessingEvent"]);
+    names = filterOut(names, ["AudioContext", "AudioNode", "AnalyserNode", "AudioBuffer", "AudioBufferSourceNode", "AudioDestinationNode", "AudioParam", "AudioListener", "AudioWorklet", "AudioWorkletGlobalScope", "AudioWorkletNode", "AudioWorkletProcessor", "BiquadFilterNode", "ChannelMergerNode", "ChannelSplitterNode", "ConstantSourceNode", "ConvolverNode", "DelayNode", "DynamicsCompressorNode", "GainNode", "IIRFilterNode", "MediaElementAudioSourceNode", "MediaStreamAudioSourceNode", "MediaStreamTrackAudioSourceNode", "MediaStreamAudioDestinationNode", "PannerNode", "PeriodicWave", "OscillatorNode", "StereoPannerNode", "WaveShaperNode", "ScriptProcessorNode", "AudioProcessingEvent", "AudioParamMap", "AudioScheduledSourceNode"]);
 
     //https://encoding.spec.whatwg.org/#dom-textencoder
 
@@ -91,8 +115,95 @@
 
     names = filterOut(names, ["SyncManager"]);
 
+    // RTC
+    names = filterOut(names, ["RTCTrackEvent", "RTCStatsReport", "RTCSessionDescription", "RTCSctpTransport", "RTCRtpTransceiver", "RTCRtpSender", "RTCRtpReceiver", "RTCPeerConnectionIceEvent", "RTCPeerConnectionIceErrorEvent", "RTCPeerConnection", "RTCIceCandidate", "RTCErrorEvent", "RTCError", "RTCDtlsTransport", "RTCDataChannelEvent", "RTCDataChannel", "RTCDTMFToneChangeEvent", "RTCDTMFSender", "RTCCertificate", "RTCIceTransport"])
+    
+    // svg
+    names = filterOut(names, ["SVGUnitTypes", "SVGTransformList", "SVGTransform", "SVGStringList", "SVGRect", "SVGPreserveAspectRatio", "SVGPointList", "SVGPoint", "SVGNumberList", "SVGNumber", "SVGMatrix", "SVGLengthList", "SVGLength", "SVGAnimatedTransformList", "SVGAnimatedString", "SVGAnimatedRect", "SVGAnimatedPreserveAspectRatio", "SVGAnimatedNumberList", "SVGAnimatedNumber", "SVGAnimatedLengthList", "SVGAnimatedLength", "SVGAnimatedInteger", "SVGAnimatedEnumeration", "SVGAnimatedBoolean", "SVGAnimatedAngle", "SVGAngle"])
 
+    // USB
+    names = filterOut(names, ["USB", "USBAlternateInterface", "USBConfiguration", "USBConnectionEvent", "USBDevice", "USBEndpoint", "USBInterface", "USBInTransferResult", "USBIsochronousInTransferPacket", "USBIsochronousInTransferResult", "USBIsochronousOutTransferPacket", "USBIsochronousOutTransferResult", "USBOutTransferResult"])
 
+    // css
+    names = filterOut(names, ["CSSVariableReferenceValue", "CSSUnparsedValue", "CSSUnitValue", "CSSTranslate", "CSSTransformValue", "CSSTransformComponent", "CSSSupportsRule", "CSSStyleValue", "CSSStyleSheet", "CSSStyleRule", "CSSStyleDeclaration", "CSSSkewY", "CSSSkewX", "CSSSkew", "CSSScale", "CSSRuleList", "CSSRule", "CSSRotate", "CSSPositionValue", "CSSPerspective", "CSSPageRule", "CSSNumericValue", "CSSNumericArray", "CSSNamespaceRule", "CSSMediaRule", "CSSMatrixComponent", "CSSMathValue", "CSSMathSum", "CSSMathProduct", "CSSMathNegate", "CSSMathMin", "CSSMathMax", "CSSMathInvert", "CSSKeywordValue", "CSSKeyframesRule", "CSSKeyframeRule", "CSSImportRule", "CSSImageValue", "CSSGroupingRule", "CSSFontFaceRule", "CSS", "CSSConditionRule", "CSSAnimation", "CSSTransition"])
+
+    // XR
+    names = filterOut(names, ["XRBoundedReferenceSpace", "XRFrame", "XRInputSource", "XRInputSourceArray", "XRInputSourceEvent", "XRInputSourcesChangeEvent", "XRPose", "XRReferenceSpace", "XRReferenceSpaceEvent", "XRRenderState", "XRRigidTransform", "XRSession", "XRSessionEvent", "XRSpace", "XRSystem", "XRView", "XRViewerPose", "XRViewport", "XRWebGLLayer", "XRHitTestResult", "XRHitTestSource", "XRRay", "XRTransientInputHitTestResult", "XRTransientInputHitTestSource", "XRLayer", "XRDOMOverlayState"])
+
+    // Bluetooth
+    names = filterOut(names, ["Bluetooth", "BluetoothCharacteristicProperties", "BluetoothDevice", "BluetoothRemoteGATTCharacteristic", "BluetoothRemoteGATTDescriptor", "BluetoothRemoteGATTServer", "BluetoothRemoteGATTService"])
+
+    // Performance
+    names = filterOut(names, ["PerformanceTiming", "PerformanceServerTiming", "PerformanceResourceTiming", "PerformancePaintTiming", "PerformanceObserverEntryList", "PerformanceObserver", "PerformanceNavigationTiming", "PerformanceNavigation", "PerformanceMeasure", "PerformanceMark", "PerformanceLongTaskTiming", "PerformanceEventTiming", "PerformanceEntry", "PerformanceElementTiming", "Performance"])
+
+    // Presentation
+    names = filterOut(names, ["Presentation", "PresentationAvailability", "PresentationConnection", "PresentationConnectionAvailableEvent", "PresentationConnectionCloseEvent", "PresentationConnectionList", "PresentationReceiver", "PresentationRequest"])
+
+    // Geolocation
+    names = filterOut(names, ["GeolocationPositionError", "GeolocationPosition", "GeolocationCoordinates", "Geolocation"])
+
+    // Animation
+    names = filterOut(names, ["Animation", "AnimationEffect", "AnimationEvent", "AnimationPlaybackEvent", "AnimationTimeline"])
+
+    // DOM
+    names = filterOut(names, ["DOMError", "DOMException", "DOMImplementation", "DOMMatrix", "DOMMatrixReadOnly", "DOMParser", "DOMPoint", "DOMPointReadOnly", "DOMQuad", "DOMRect", "DOMRectList", "DOMRectReadOnly", "DOMTokenList"])
+
+    // IDB
+    names = filterOut(names, ["IDBCursor", "IDBCursorWithValue", "IDBDatabase", "IDBFactory", "IDBIndex", "IDBKeyRange", "IDBObjectStore", "IDBOpenDBRequest", "IDBRequest", "IDBTransaction", "IDBVersionChangeEvent"])
+
+    // Media
+    names = filterOut(names, ["MediaCapabilities", "MediaDeviceInfo", "MediaDevices", "MediaEncryptedEvent", "MediaKeyMessageEvent", "MediaKeySession", "MediaKeyStatusMap", "MediaKeySystemAccess", "MediaKeys", "MediaList", "MediaMetadata", "MediaQueryList", "MediaQueryListEvent", "MediaRecorder", "MediaSession", "MediaSettingsRange", "MediaSource", "MediaStream", "MediaStreamEvent", "MediaStreamTrack", "MediaStreamTrackEvent"])
+
+    // MIDI
+    names = filterOut(names, ["MIDIAccess", "MIDIConnectionEvent", "MIDIInput", "MIDIInputMap", "MIDIMessageEvent", "MIDIOutput", "MIDIOutputMap", "MIDIPort"])
+    
+    // Payment
+    names = filterOut(names, ["PaymentAddress", "PaymentInstruments", "PaymentManager", "PaymentMethodChangeEvent", "PaymentRequest", "PaymentRequestUpdateEvent", "PaymentResponse"])
+    
+    // ServiceWorker
+    names = filterOut(names, ["ServiceWorker", "ServiceWorkerContainer", "ServiceWorkerRegistration"])
+    
+    
+    // Style
+    names = filterOut(names, ["StylePropertyMap", "StylePropertyMapReadOnly", "StyleSheet", "StyleSheetList"])
+    
+    
+    // Trusted
+    names = filterOut(names, ["TrustedHTML", "TrustedScript", "TrustedScriptURL", "TrustedTypePolicy", "TrustedTypePolicyFactory", "trustedTypes"])
+    
+    
+    // XML
+    names = filterOut(names, ["XMLHttpRequest", "XMLHttpRequestEventTarget", "XMLHttpRequestUpload", "TrustedTypePolicy", "XMLSerializer"])
+    
+    
+    // BOM
+    names = filterOut(names, [
+        "getComputedStyle", 
+        "innerHeight", 
+        "innerWidth", 
+        "moveBy", 
+        "moveTo",
+        "pageXOffset",
+        "pageYOffset",
+        "resizeBy",
+        "resizeTo",
+        "scroll",
+        "scrollBy",
+        "scrollTo",
+        "scrollX",
+        "screen",
+        "screenLeft",
+        "screenTop",
+        "screenX",
+        "screenY",
+        "sessionStorage",
+        "localStorage",
+        "setInterval",
+        "setTimeout",
+        "requestAnimationFrame",
+    ])
+    
+    
     console.log(names.length);
 
 </script>
