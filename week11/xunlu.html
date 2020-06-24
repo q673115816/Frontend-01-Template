@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .cell {
+            /* display: inline-block; */
+            width: 6px;
+            height: 6px;
+            background-color: gray;
+            border-bottom: solid 1px white;
+            border-right: solid 1px white;
+        }
+
+        #container {
+            width: 701px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container"></div>
+    <button onclick="save()">save</button>
+    <button onclick="cl()">clear</button>
+    <script>
+        let arr = localStorage.data ? JSON.parse(localStorage.data) : Array(10000).fill(0)
+
+        function draw() {
+            document.querySelector('#container').innerHTML = ''
+            for (let y = 0; y < 100; y++) {
+                for (let x = 0; x < 100; x++) {
+                    let cell = document.createElement('div')
+                    cell.classList.add('cell')
+                    if (arr[(y * 100 + x*1)] === 1) {
+                        cell.style.backgroundColor = '#000'
+                    }
+                    cell.setAttribute('i', y * 100 + x*1)
+                    document.querySelector('#container').append(cell)
+                }
+            }
+        }
+
+        function init() {
+            draw()
+        }
+
+        init()
+
+        let down = false
+        document.addEventListener('mousedown', () => {
+            down = true
+        })
+        document.addEventListener('mouseup', () => {
+            down = false
+        })
+        document.addEventListener('mouseover', (e) => {
+            if (down && e.target.classList.contains('cell')) {
+                arr[e.target.getAttribute('i')] = 1
+                e.target.style.backgroundColor = '#000'
+            }
+        })
+
+        function save() {
+            localStorage.setItem('data', JSON.stringify(arr))
+        }
+
+        function cl() {
+            arr = Array(10000).fill(0)
+            draw()
+        }
+    </script>
+</body>
+
+</html>

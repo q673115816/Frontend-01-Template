@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        div {
+            width: 100px;
+            height: 100px;
+            margin: 20px;
+            border-radius: 1000px;
+            background-color: gray;
+        }
+
+        #red.on {
+            background-color: #f00;
+        }
+
+        #yellow.on {
+            background-color: #ff0;
+        }
+
+        #green.on {
+            background-color: #0ff;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="red" time="5"></div>
+    <div id="yellow" time="2"></div>
+    <div id="green" time="10"></div>
+    <script>
+        let curr = 0
+        void function cb() {
+            document
+            .querySelectorAll('div')
+            .forEach((e, i) => {
+                curr = curr > 2 ? 0: curr
+                if(i === curr) {
+                    e.classList.add('on')
+                    setTimeout(() => {
+                    e.classList.remove('on')
+                        curr++
+                        cb()
+                    }, e.getAttribute('time') * 1000);
+                }
+            })
+        }();
+    </script>
+</body>
+
+</html>
