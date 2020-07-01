@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        let reg = /([0-9\.]+)|([ ])|([\r\n]+)|(\+)|(\-)|(\*)|(\\)/g
+        let dist = ['Number', 'Whitespace', 'LineTeminator', '+', '-', '*', '/']
+        function* tokenize(code) {
+            let result = null
+            let lastIndex = 0
+            do {
+                lastIndex = reg.lastIndex
+                result = reg.exec(code)
+                if(!result) break                
+                if(reg.lastIndex - lastIndex > result[0].length)
+                    throw new Error('sss')
+                let token = {
+                    value: null,
+                    type: null
+                }
+                for(let i = 0;i<dist.length;i++) {
+                    if(result[i + 1])
+                        // console.log(result[i + 1], dist[i])
+                        token.type = dist[i]
+                }
+                token.value = result[0]
+                
+                yield token
+
+            } while (result);
+            yield {type: 'EOF'}
+        }
+
+        let source = []
+
+        function fn1(source) {
+            if(source[0].type === 'Number') {
+                console.log(source[0])
+            }
+        }
+
+        for (const token of tokenize('10 + 2 * 1024')) {
+            // console.log(token)
+            if(token.type!== 'EOF' && token.type !== 'Whitespace' && token.type !== 'LineTeminator'){
+                source.push(token)
+            }
+        }
+        fn1(source)
+    </script>
+</body>
+</html>
