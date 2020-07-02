@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        const handles = new Map()
+        const usedReactivies = []
+        let obj = {
+            a: 1,
+            b: 2
+        }
+
+        function reactive(obj) {
+            return new Proxy(obj, {
+                get(obj, prop) {
+                    return obj[prop]
+                },
+                set(obj, prop, val) {
+                    obj[prop] = val
+                    for (const handle of handles) {
+                        handle()
+                    }
+                }
+            })
+        }
+
+        let proxy = reactive(obj)
+
+        function effect(handle) {
+            usedReactivies =[]
+            handle()
+            for(let [obj, prop] of usedReactivies) {
+                if(!handles.has(obj)) {
+                    handles.set(obj, new Map())
+                }
+
+                if(!handles.get(obj).has(prop)) {
+                    handles.get(obj).set(prop, [])
+                }
+
+            }
+            handles.push(handle)
+        }
+
+        let bummy
+
+        effect(() => bummy = proxy.a)
+ 
+        console.log(proxy)
+        proxy.a = 10
+        console.log(proxy)
+        console.log(bummy)
+    </script>
+</body>
+
+</html>
