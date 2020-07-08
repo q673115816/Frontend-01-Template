@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .box {
+            display: inline-block;
+            width: 100px;
+            height: 100px;
+            background-color: #ace;
+        }
+    </style>
+</head>
+<body>
+    <div id="text">
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam, harum quaerat consequuntur tempore, reprehenderit incidunt minima quidem itaque, est cupiditate aliquid suscipit? Ducimus, ipsam in. Illo dolore suscipit amet ex.
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam, harum quaerat consequuntur tempore, reprehenderit incidunt minima quidem itaque, est cupiditate aliquid suscipit? Ducimus, ipsam in. Illo dolore suscipit amet ex.
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam, harum quaerat consequuntur tempore, reprehenderit incidunt minima quidem itaque, est cupiditate aliquid suscipit? Ducimus, ipsam in. Illo dolore suscipit amet ex.
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam, harum quaerat consequuntur tempore, reprehenderit incidunt minima quidem itaque, est cupiditate aliquid suscipit? Ducimus, ipsam in. Illo dolore suscipit amet ex.
+    </div>
+    <div class="box"></div>
+    <script>
+        document.addEventListener('mousedown', () => {
+            let move = (e) => {
+                let t = e.target
+                if(t.classList.contains('box')) {
+                    let x = e.clientX - t.clientWidth / 2 - t.offsetLeft
+                    let y = e.clientY - t.clientHeight / 2 - t.offsetTop
+                    console.log(e)
+                    t.style.transform = `translate(${x}px, ${y}px)`
+                }
+            }
+            let up = () => {
+                document.removeEventListener('mousemove', move)
+                document.removeEventListener('mouseover', up)
+            }
+            document.addEventListener('mousemove', move)
+            document.addEventListener('mouseup', up)
+        })
+
+        let ranges = []
+        for(let i = 0;i<text.textContent.length;i++) {
+            let range = document.createRange()
+            console.log(text[i]);
+            
+            // range.setStart(text[i])
+            // range.setEnd(text[i])
+            // ranges.push(range)
+        }
+        console.log(ranges)
+    </script>
+</body>
+</html>
