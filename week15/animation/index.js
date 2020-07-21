@@ -2,6 +2,7 @@ class TimeLine {
     constructor() {
         this.animations = []
         this.requestID = null
+        this.state = 'pending'
     }
     tick() {
         let t = Date.now() - this.startTime
@@ -10,24 +11,55 @@ class TimeLine {
             let { object, property, template, start, end, duration, delay = 0, timingFunction } = animation
             if (t > duration + delay) {
                 animation.finish = true
-                continue
+                t = duration + delay
             }
-            let process = start + (end - start) * (t / duration)
-            let value = timingFunction(process)
+            let process = timingFunction(t / duration)
+            let value = start + (end - start) * process
 
             object[property] = template(value)
         }
-        if (this.animations.length > 0)
+        if (this.animations.length > 0) {
             this.requestID = requestAnimationFrame(() => this.tick())
+        } else {
+            this.state = 'finish'
+        }
     }
     start() {
-        this.startTime = new Date
+        this.state = 'running'
+        this.startTime = Date.now()
         this.tick()
     }
 
     pause() {
-        if (this.requestID !== null)
+        if (this.requestID !== null && this.state === 'running') {
+            this.state = 'paused'
+            this.endTime = Date.now()
             cancelAnimationFrame(this.requestID)
+        }
+    }
+
+    resume() {
+        if(this.state === 'paused') {
+            this.state = 'running'
+            this.startTime += Date.now() - this.endTime
+            this.tick()
+        }
+    }
+
+    clear() {
+        if(this.state !== 'finish') {
+            this.state = 'finish'
+            cancelAnimationFrame(this.requestID)
+            for(const animation of this.animations) {
+                let { object, property, template, start, end, duration, delay = 0, timingFunction } = animation
+                object[property] = template(start + end)
+                animation.finish = true
+            }
+        }
+    }
+
+    reset() {
+        this.state = 'pending'
     }
 
     add(animation) {
