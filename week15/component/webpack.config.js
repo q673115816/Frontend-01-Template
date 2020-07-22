@@ -6,7 +6,7 @@ module.exports = {
     optimization: {
         minimize: false
     },
-    devtool: "inline-source-map",
+    // devtool: "inline-source-map",
     module: {
         rules: [
             {
@@ -15,7 +15,9 @@ module.exports = {
                     loader: 'babel-loader',
                     options: {
                         presets: ['@babel/preset-env'],
-                        plugins: [['@babel/plugin-transform-react-jsx']]
+                        plugins: [['@babel/plugin-transform-react-jsx', {
+                            pragma: 'createElement'
+                        }]]
                     }
                 }
             },

@@ -1,4 +1,4 @@
-module.exports = function createElement(Cls, attributes, ...children) {
+export function createElement(Cls, attributes, ...children) {
     var o
     if (typeof Cls === 'string') {
         o = new Wrap(Cls)
@@ -11,6 +11,7 @@ module.exports = function createElement(Cls, attributes, ...children) {
     }
     const visit = (children) => {
         for (let child of children) {
+            console.log(o)
             if (typeof child === 'string') {
                 return o.appendChildren(new Text(child))
             } else if (child instanceof Array) {
@@ -47,7 +48,7 @@ module.exports = function createElement(Cls, attributes, ...children) {
 //     }
 // }
 
-class Wrap {
+export class Wrap {
     constructor(type) {
         this.children = []
         this.root = document.createElement(type)
@@ -81,7 +82,7 @@ class Wrap {
     }
 }
 
-class Text {
+export class Text {
     constructor(text) {
         this.root = document.createTextNode(text)
     }
