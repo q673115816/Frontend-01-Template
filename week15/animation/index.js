@@ -6,8 +6,12 @@ class TimeLine {
     }
     tick() {
         let t = Date.now() - this.startTime
-        this.animations = this.animations.filter(animation => animation.finish !== true)
+        //this.animations = this.animations.filter(animation => animation.finish !== true)
+        let allFinish = this.animations.some(animation => animation.finish !== true)
         for (let animation of this.animations) {
+            if (animation.finish) {
+                continue
+            }
             let { object, property, template, start, end, duration, delay = 0, timingFunction } = animation
             if (t > duration + delay) {
                 animation.finish = true
@@ -18,7 +22,8 @@ class TimeLine {
 
             object[property] = template(value)
         }
-        if (this.animations.length > 0) {
+
+        if (allFinish) {
             this.requestID = requestAnimationFrame(() => this.tick())
         } else {
             this.state = 'finish'
@@ -39,7 +44,7 @@ class TimeLine {
     }
 
     resume() {
-        if(this.state === 'paused') {
+        if (this.state === 'paused') {
             this.state = 'running'
             this.startTime += Date.now() - this.endTime
             this.tick()
@@ -47,10 +52,10 @@ class TimeLine {
     }
 
     clear() {
-        if(this.state !== 'finish') {
+        if (this.state !== 'finish') {
             this.state = 'finish'
             cancelAnimationFrame(this.requestID)
-            for(const animation of this.animations) {
+            for (const animation of this.animations) {
                 let { object, property, template, start, end, duration, delay = 0, timingFunction } = animation
                 object[property] = template(start + end)
                 animation.finish = true
@@ -59,7 +64,8 @@ class TimeLine {
     }
 
     reset() {
-        this.state = 'pending'
+        this.animations.map(animation => animation.finish = false)
+        this.start()
     }
 
     add(animation) {
