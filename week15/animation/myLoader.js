@@ -17,6 +17,7 @@ module.exports = function (source, map) {
 
 
     // console.log(template)
+    console.log(script)
 
     let visit = (node) => {
         if (node.type === 'text') {
@@ -34,6 +35,8 @@ module.exports = function (source, map) {
 
     let r = `
     import { createElement, Wrap, Text } from './createElement.js'
+    import { cubicBezier } from './cubicBezier.js'
+    import { Animation, ColorAnimation, TimeLine, ColorTimeLine } from './index.js'
     export class Demo {
         render() {
             return ${visit(template)}
@@ -43,9 +46,11 @@ module.exports = function (source, map) {
        }
         mount(parent) {
             this.render().mount(parent)
+            ${script}
         }
     }
+    
     `
-    console.log(r)
+    // console.log(r)
     return r
 }
