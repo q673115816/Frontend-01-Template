@@ -5,13 +5,14 @@ export class TimeLine {
         this.state = 'pending'
     }
     tick() {
-        let t = Date.now() - this.startTime
-        //this.animations = this.animations.filter(animation => animation.finish !== true)
+        // let t = Date.now() - this.startTime
+        this.animations = this.animations.filter(animation => animation.finish !== true)
         let allFinish = this.animations.some(animation => animation.finish !== true)
         for (let animation of this.animations) {
             if (animation.finish) {
                 continue
             }
+            let t = Date.now() - animation.createTime
             let { object, property, template, start, end, duration, delay = 0, timingFunction } = animation
             if (t > duration + delay) {
                 animation.finish = true
@@ -19,7 +20,6 @@ export class TimeLine {
             }
             let process = timingFunction(t / duration)
             let value = start + (end - start) * process
-
             object[property] = template(value)
         }
 
@@ -79,13 +79,14 @@ export class ColorTimeLine {
         this.state = 'pending'
     }
     tick() {
-        let t = Date.now() - this.startTime
+        // let t = Date.now() - this.startTime
         //this.animations = this.animations.filter(animation => animation.finish !== true)
         let allFinish = this.animations.some(animation => animation.finish !== true)
         for (let animation of this.animations) {
             if (animation.finish) {
                 continue
             }
+            let t = Date.now() - animation.createTime
             let { object, property, template, start, end, duration, delay = 0, timingFunction } = animation
             if (t > duration + delay) {
                 animation.finish = true
@@ -161,6 +162,7 @@ export class Animation {
         this.duration = duration
         this.delay = delay
         this.timingFunction = timingFunction
+        this.createTime = Date.now()
     }
 }
 export class ColorAnimation {

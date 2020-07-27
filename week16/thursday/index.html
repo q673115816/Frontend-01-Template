@@ -1,8 +1,18 @@
-
 <body>
-    <div style="width: 200px;height: 200px;background-color: blueviolet;" id="box"></div>
+    <div style="width: 200px;height: 200px;background-color: blueviolet;transform: translate(50px, 50px);position: absolute;"
+        id="box"></div>
 </body>
 <script src="./index.js"></script>
 <script>
-    move(document.querySelector('#box'))
+    var box = document.querySelector('#box')
+    move(box)
+    box.addEventListener('start', (e) => {
+        console.log(e)
+    })
+    box.addEventListener('move', ({ detail, target: t }) => {
+        t.style.transform = `translate(${detail.dx + detail.apartX}px, ${detail.dy + detail.apartY}px)`
+    })
+    box.addEventListener('end', ({ detail, target: t }) => {
+        console.log(detail);
+    })
 </script>
