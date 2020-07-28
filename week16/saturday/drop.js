@@ -1,4 +1,4 @@
-function drop(element) {
+export function drop(element) {
 
     const contexts = Object.create(null)
 

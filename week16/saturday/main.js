@@ -1,8 +1,6 @@
-const createElement = require('./createElement.js')
-
+import createElement from './createElement'
 import { ease } from './cubicBezier.js'
 import { TimeLine, Animation } from './animate.js'
-import { drop } from './drop.js'
 class Carousel {
     constructor() {
         this.children = []
@@ -23,8 +21,21 @@ class Carousel {
     }
 
     render() {
-        let child = this.data.map(url => {
-            let ele = <img src={url}/>
+        function start() {
+            timeLine.pause()
+        }
+
+        function move(index, { detail, target: t }) {
+            console.log(index)
+            t.style.transform = `translate(${detail.dx + detail.apartX}px, 0px)`
+        }
+        let child = this.data.map((url, index) => {
+            let ele = <img
+                src={url}
+                picdrop
+                style={'transform: translate(0, 0)'}
+                onStart={start}
+                onMove={move.bind(null, index)} />
             ele.addEventListener('dragstart', (e) => e.preventDefault())
             return ele
         })
@@ -43,8 +54,10 @@ class Carousel {
             let nextPostion = (position + 1) % child.length
             let curr = child[position]
             let next = child[nextPostion]
-            let currAnimate = new Animation(curr.style, 'transform', v => `translateX(${v}%)`, - 100 * position, -100 - 100 * position, 400, 0, ease)
-            let nextAnimate = new Animation(next.style, 'transform', v => `translateX(${v}%)`, 100 - 100 * nextPostion, -100 * nextPostion, 400, 0, ease)
+            let currWidth = curr.width.match(/.+(?=px)/)[0]
+            let nextWidth = curr.width.match(/.+(?=px)/)[0]
+            let currAnimate = new Animation(curr.style, 'transform', v => `translate(${v}px, 0)`, - currWidth * position, -currWidth - currWidth * position, 400, 0, ease)
+            let nextAnimate = new Animation(next.style, 'transform', v => `translate(${v}px, 0)`, nextWidth - nextWidth * nextPostion, -nextWidth * nextPostion, 400, 0, ease)
             timeLine.add(currAnimate)
             timeLine.add(nextAnimate)
             position = nextPostion

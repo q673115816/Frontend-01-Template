@@ -1,4 +1,6 @@
-module.exports = function createElement(Cls, attributes, ...children) {
+import { drop } from './drop.js';
+
+export default function createElement(Cls, attributes, ...children) {
     var o
     if (typeof Cls === 'string') {
         o = new Wrap(Cls)
@@ -54,11 +56,24 @@ class Wrap {
     }
 
     setAttribute(name, attr) {
+        if(name === 'picdrop') {
+            drop(this.root)
+            return
+        }
+        if (/^on[A-Z]\w+$/.test(name)) {
+            let handle = name.toLowerCase().match(/^on(\w+)$/)[1]
+            this.root.addEventListener(handle, attr)
+            return 
+        }
         this.root.setAttribute(name, attr)
     }
 
     appendChildren(child) {
         this.children.push(child)
+    }
+
+    get width() {
+        return getComputedStyle(this.root).width
     }
 
     get style() {
