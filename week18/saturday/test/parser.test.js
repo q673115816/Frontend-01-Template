@@ -2,8 +2,8 @@
 // import assert from 'assert'
 var assert = require('assert')
 var { parseHTML } = require('../src/parser.js')
-it('1', () => {
-    describe('can run', () => {
+describe('1', () => {
+    it('can run', () => {
         let dom = parseHTML('<div></div>')
         assert.equal(dom.children.length, 1)
 
@@ -11,22 +11,22 @@ it('1', () => {
     })
 
 })
-it('2', () => {
-    describe('tag dismatch', () => {
+describe('2', () => {
+    it('tag dismatch', () => {
         try {
             let dom = parseHTML('<div></vid>')
         } catch (error) {
             assert.equal(error.message, `Tag start end doesn't match!`)
         }
     })
-    describe('tag error', () => {
+    it('tag error', () => {
         try {
             let dom = parseHTML('<div')
         } catch (error) {
             assert.equal(error.message, `Tag doesn't close!`)
         }
     })
-    describe('end tag error', () => {
+    it('end tag error', () => {
         try {
             let dom = parseHTML('<div></>')
         } catch (error) {
@@ -34,7 +34,7 @@ it('2', () => {
         }
     })
 
-    describe('小于号', () => {
+    it('小于号', () => {
         let dom = parseHTML('<div><555</div>')
         assert.equal(dom.children[0].type, 'element')
         assert.equal(dom.children[0].attributes[0].name, 'type')
@@ -45,7 +45,7 @@ it('2', () => {
         assert.equal(dom.children[0].children[0].content, '555')
     })
 
-    describe('self close', () => {
+    it('self close', () => {
         let dom = parseHTML('<img src="exmple.png" alt="" />')
         // console.log(dom.children[0].attributes);
         assert.equal(dom.children.length, 1)
@@ -61,7 +61,7 @@ it('2', () => {
         assert.equal(dom.children[0].attributes[4].value, true)
     })
 
-    describe('self close beofrejust attr', () => {
+    it('self close beofrejust attr', () => {
         let dom = parseHTML('<img/>')
         assert.equal(dom.children.length, 1)
         assert.equal(dom.children[0].attributes[0].name, 'type')
@@ -72,7 +72,7 @@ it('2', () => {
         assert.equal(dom.children[0].attributes[2].value, true)
     })
 
-    describe('big tag name', () => {
+    it('big tag name', () => {
         let dom = parseHTML('<DIV></DIV>')
         // console.log(dom.children[0].attributes);
         assert.equal(dom.children.length, 1)
@@ -83,8 +83,8 @@ it('2', () => {
     })
 })
 
-it('3', () => {
-    describe('has text', () => {
+describe('3', () => {
+    it('has text', () => {
         let dom = parseHTML('<div>hello world!</div>')
         assert.equal(dom.children.length, 1)
         assert.equal(dom.children[0].children[0].type, 'text')
@@ -93,8 +93,8 @@ it('3', () => {
     })
 })
 
-it('4', () => {
-    describe('add attr', () => {
+describe('4', () => {
+    it('add attr', () => {
         let dom = parseHTML('<div class="classname"></div>')
         assert.equal(dom.children.length, 1)
         assert.equal(dom.children[0].attributes[0].name, 'type')
@@ -105,7 +105,7 @@ it('4', () => {
         assert.equal(dom.children[0].attributes[2].value, 'classname')
     })
 
-    describe('add attr and has space', () => {
+    it('add attr and has space', () => {
         let dom = parseHTML('<div    class   =   "classname"></div>')
         assert.equal(dom.children.length, 1)
         assert.equal(dom.children[0].attributes[0].name, 'type')
@@ -116,7 +116,7 @@ it('4', () => {
         assert.equal(dom.children[0].attributes[2].value, 'classname')
     })
 
-    describe('singleQuoted', () => {
+    it('singleQuoted', () => {
         let dom = parseHTML(`<div name='attr'/>`)
         assert.equal(dom.children.length, 1)
         assert.equal(dom.children[0].attributes[0].name, 'type')
@@ -127,7 +127,7 @@ it('4', () => {
         assert.equal(dom.children[0].attributes[2].value, 'attr')
     })
 
-    describe('Unquote', () => {
+    it('Unquote', () => {
         let dom = parseHTML('<div asd=qwe><div asd=qwe ><div asd=qwe/></div></div>')
         assert.equal(dom.children.length, 1)
         assert.equal(dom.children[0].attributes[0].name, 'type')
@@ -138,7 +138,7 @@ it('4', () => {
         assert.equal(dom.children[0].attributes[2].value, 'qwe')
     })
 
-    describe('after kv attr', () => {
+    it('after kv attr', () => {
         let dom = parseHTML('<div name="666"aaa></div>')
         assert.equal(dom.children.length, 1)
         assert.equal(dom.children[0].attributes[0].name, 'type')
@@ -151,8 +151,8 @@ it('4', () => {
 
 })
 
-it('5', () => {
-    describe('script', () => {
+describe('5', () => {
+    it('script', () => {
         let dom = parseHTML(`
             <script>
                 console.log('hello world!')
