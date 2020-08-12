@@ -1,7 +1,7 @@
 let currentToken = null;
 let currentAttribute = null;
 
-let stack = [{ type: "document", children: [] }];
+let stack;
 let currentTextNode = null;
 
 function emit(token) {
@@ -84,12 +84,14 @@ function tagOpen(c) {
             type: "text",
             content: c
         });
-        return;
+        return data;
     }
 }
 
 function tagName(c) {
-    if (c.match(/^[\t\n\f ]$/)) {
+    if (c == EOF) {
+        throw new Error("Tag doesn't close!");
+    } else if (c.match(/^[\t\n\f ]$/)) {
         return beforeAttributeName;
     } else if (c == "/") {
         return selfClosingStartTag;
@@ -177,7 +179,7 @@ function singleQuotedAttributeValue(c) {
 
     } else {
         currentAttribute.value += c;
-        return doubleQuotedAttributeValue
+        return singleQuotedAttributeValue
     }
 }
 
@@ -190,11 +192,12 @@ function afterQuotedAttributeValue(c) {
         currentToken[currentAttribute.name] = currentAttribute.value;
         emit(currentToken);
         return data;
-    } else if (c == EOF) {
+    // } else if (c == EOF) {
 
     } else {
-        currentAttribute.value += c;
-        return doubleQuotedAttributeValue
+        // currentAttribute.value += c;
+        // return doubleQuotedAttributeValue
+        return afterAttributeName(c)
     }
 }
 
@@ -215,7 +218,7 @@ function UnquotedAttributeValue(c) {
 
     } else if (c == "\"" || c == "'" || c == "<" || c == "=" || c == "`") {
 
-    } else if (c == EOF) {
+    // } else if (c == EOF) {
 
     } else {
         currentAttribute.value += c;
@@ -228,7 +231,7 @@ function selfClosingStartTag(c) {
         currentToken.isSelfClosing = true;
         emit(currentToken);
         return data;
-    } else if (c == "EOF") {
+    // } else if (c == "EOF") {
 
     } else {
 
@@ -243,8 +246,8 @@ function endTagOpen(c) {
         }
         return tagName(c);
     } else if (c == ">") {
-
-    } else if (c == EOF) {
+        throw new Error("end Tag error");
+    // } else if (c == EOF) {
 
     } else {
 
@@ -291,7 +294,7 @@ function scriptDataEndTagOpen(c) {
 
         emit({
             type: "text",
-            content: "/"
+            content: "</"
         });
 
         emit({
