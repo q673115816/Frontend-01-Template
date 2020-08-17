@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form action="/create" method="post" onsubmit="create()">
+        <table>
+            <tr>
+                <th>filename</th>
+                <td><input type="text" name="filename"></td>
+            </tr>
+            <tr>
+                <th>message</th>
+                <td><input type="text" name="message"></td>
+            </tr>
+            <tr>
+                <th></th>
+                <td><button type="submit">提交</button></td>
+            </tr>
+        </table>
+    </form>
+    <script>
+        function create(event) {
+            event = event || window.event
+            event.preventDefault()
+            console.log(event.target);
+        } 
+    </script>
+</body>
+</html>
