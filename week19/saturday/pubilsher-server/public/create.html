@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+
 <body>
     <form action="/create" method="post" onsubmit="create()">
         <table>
@@ -26,8 +28,22 @@
         function create(event) {
             event = event || window.event
             event.preventDefault()
-            console.log(event.target);
-        } 
+            let formDate = new FormData(event.target).entries()
+            let body = {}
+            for(let [k, v] of formDate) {
+                body[k] = v
+            }
+                fetch('/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(body)
+                }).then(res => {
+                    console.log(res);
+                })
+        }
     </script>
 </body>
+
 </html>

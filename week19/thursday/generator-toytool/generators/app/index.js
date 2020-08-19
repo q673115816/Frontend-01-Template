@@ -22,7 +22,7 @@ module.exports = class extends Generator {
         )
         this.npmInstall([
             'webpack',
-            'webpack-cli', ,
+            'webpack-cli',
             'webpack-dev-server'
         ], { 'save-dev': true })
     }
