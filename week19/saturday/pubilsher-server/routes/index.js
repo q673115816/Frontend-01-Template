@@ -19,7 +19,20 @@ router.post('/create', async (req, res, next) => {
 })
 
 router.post('/s', async (req, res, next) => {
-  
+  let matched = req.url.match(/filename=([^&]+)/)
+  let filename = matched && matched[1]
+  if(!filename)
+    return
+  let writeStream = fs.createWriteStream(path.resolve(__dirname, '../../server/public', filename))
+  req.pipe(writeStream)
+  req.on('end', () => {
+    res.writeHead(200, {'Content-Type': 'text/plain'})
+    res.end('ojbk')
+  })
+})
+
+router.post('/zip', (req, res, next) => {
+  res.end('unzip')
 })
 
 module.exports = router;
