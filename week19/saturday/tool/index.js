@@ -2,14 +2,16 @@ const fs = require('fs')
 
 const http = require('http')
 
-const img = './qyqx.jpg'
+const path = require('path')
+
+const img = 'download.jpg'
 
 fs.stat(img, (err, stats) => {
 
     const options = {
         host: 'localhost',
         port: 3001,
-        path: '/s?filename=qyqx.jpg',
+        path: `/s?filename=${img}`,
         method: 'POST',
         headers: {
             'Content-Type': 'application/octet-stream',
@@ -21,7 +23,7 @@ fs.stat(img, (err, stats) => {
     })
 
     req.on('error', (e) => console.log(e))
-    let readStream = fs.createReadStream(img)
+    let readStream = fs.createReadStream(path.join(__dirname, img))
     readStream.pipe(req)
     readStream.on('end', () => {
         req.end()
