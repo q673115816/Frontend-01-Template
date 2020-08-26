@@ -1,6 +1,8 @@
 const http = require('http')
 const url = require('url')
 const https = require('https')
+const process = require('process')
+const {CODEURL} = require('./config')
 
 const server = http.createServer((req, res, next) => {
     if(req.url.match(/^\/auth/)) {
@@ -22,7 +24,13 @@ const server = http.createServer((req, res, next) => {
                 process.stdout.write(d);
             });
             response.on('end', () => {
-                res.end(data)
+                const access_token = decodeURIComponent(data)
+                    .match(/access_token=([\s\S]+?)&/)
+                    if(access_token) {
+                        res.end(`<a href="http://localhost:3000/?access_token=${access_token[1]}">public</a>`)
+                    }else {
+                        res.end(`<script>window.location = "${CODEURL}"</script>`)
+                    }
                 console.log('响应中已无数据');
             });
         });
